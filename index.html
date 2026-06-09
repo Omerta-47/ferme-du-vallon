@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>La Ferme du Vallon – Cuisine de Terroir & Montagne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --vert:       #3B4A3F;
+    --vert-clair: #556B5A;
+    --vert-pale:  #E8EDE9;
+    --brun:       #5C3D2E;
+    --brun-clair: #7A5240;
+    --brun-pale:  #F2EBE2;
+    --cuivre:     #B87333;
+    --cuivre-clair:#D4944D;
+    --sable:      #F7F2EA;
+    --pierre:     #C9BEB3;
+    --texte:      #2A1E16;
+    --texte-muted:#6B5747;
+    --blanc:      #FDFAF6;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Josefin Sans', sans-serif;
+    background: var(--blanc);
+    color: var(--texte);
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ══════════════ TEXTURE OVERLAY ══════════════ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ══════════════ NAV ══════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3.5rem;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background 0.5s, border-color 0.5s, backdrop-filter 0.5s;
+  }
+  nav.scrolled {
+    background: rgba(253,250,246,0.96);
+    border-bottom-color: var(--pierre);
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.5s;
+  }
+  nav.scrolled .nav-logo { color: var(--brun); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    text-decoration: none;
+    color: rgba(255,255,255,0.82);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: color 0.3s;
+  }
+  nav.scrolled .nav-links a { color: var(--texte-muted); }
+  .nav-links a:hover { color: var(--cuivre) !important; }
+  .nav-resa {
+    border: 1px solid rgba(255,255,255,0.5);
+    padding: 0.45rem 1.2rem;
+    transition: border-color 0.3s, color 0.3s, background 0.3s !important;
+  }
+  nav.scrolled .nav-resa { border-color: var(--cuivre); color: var(--cuivre) !important; }
+  .nav-resa:hover { background: var(--cuivre) !important; color: #fff !important; border-color: var(--cuivre) !important; }
+
+  /* ══════════════ HERO ══════════════ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 2rem;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: -15%;
+    background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=1800&q=85') center/cover no-repeat;
+    z-index: 0; will-change: transform;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(20,12,6,0.65) 0%,
+      rgba(35,22,10,0.45) 50%,
+      rgba(20,12,6,0.80) 100%
+    );
+    z-index: 1;
+  }
+  /* Décoration coin */
+  .hero-corner {
+    position: absolute; z-index: 2;
+    width: 100px; height: 100px;
+    border-color: rgba(184,115,51,0.5);
+    border-style: solid;
+  }
+  .hero-corner-tl { top: 2.5rem; left: 2.5rem; border-width: 1px 0 0 1px; }
+  .hero-corner-br { bottom: 2.5rem; right: 2.5rem; border-width: 0 1px 1px 0; }
+
+  .hero-content { position: relative; z-index: 2; }
+  .hero-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--cuivre-clair); margin-bottom: 1.4rem;
+    opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    color: #fff; line-height: 1;
+    margin-bottom: 1rem;
+    opacity: 0; transform: translateY(30px); animation: fadeUp 0.9s 0.55s forwards;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  }
+  .hero h1 em { font-style: italic; color: var(--cuivre-clair); }
+  .hero-sub {
+    font-size: 0.95rem; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.78);
+    max-width: 500px; margin-bottom: 3rem; font-weight: 300;
+    opacity: 0; transform: translateY(20px); animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .hero-btns {
+    display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+    opacity: 0; transform: translateY(20px); animation: fadeUp 0.9s 1s forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 1s 1.5s forwards;
+  }
+  .scroll-hint span { font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .scroll-line {
+    width: 1px; height: 45px;
+    background: linear-gradient(to bottom, rgba(184,115,51,0.9), transparent);
+    animation: scrollPulse 2s 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+
+  /* ══════════════ BOUTONS ══════════════ */
+  .btn-primary {
+    background: var(--brun); color: #fff;
+    padding: 0.9rem 2.4rem; border: none;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.25s, transform 0.15s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--brun-clair); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: #fff;
+    padding: 0.9rem 2.4rem;
+    border: 1px solid rgba(255,255,255,0.55);
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+    text-decoration: none; display: inline-block;
+    transition: border-color 0.25s, color 0.25s, transform 0.15s;
+  }
+  .btn-outline:hover { border-color: var(--cuivre); color: var(--cuivre); transform: translateY(-2px); }
+
+  /* ══════════════ BANDEAU ══════════════ */
+  .bandeau {
+    background: var(--vert); color: rgba(255,255,255,0.85);
+    text-align: center; padding: 1rem 2rem;
+    font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .bandeau span { color: var(--cuivre-clair); margin: 0 0.6rem; }
+
+  /* ══════════════ REVEAL ══════════════ */
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.75s ease,transform 0.75s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-left { opacity:0; transform:translateX(-55px); transition:opacity 0.85s ease,transform 0.85s ease; }
+  .reveal-left.visible { opacity:1; transform:translateX(0); }
+  .reveal-right { opacity:0; transform:translateX(55px); transition:opacity 0.85s ease,transform 0.85s ease; }
+  .reveal-right.visible { opacity:1; transform:translateX(0); }
+  .delay-1{transition-delay:0.1s} .delay-2{transition-delay:0.2s}
+  .delay-3{transition-delay:0.3s} .delay-4{transition-delay:0.4s} .delay-5{transition-delay:0.5s}
+
+  /* ══════════════ LAYOUT ══════════════ */
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1120px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--cuivre); margin-bottom: 0.8rem; font-weight: 400;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem,4vw,3.2rem);
+    color: var(--brun); line-height: 1.15; margin-bottom: 1.4rem;
+    font-weight: 600;
+  }
+  .divider {
+    display: flex; align-items: center; gap: 1rem; margin: 1rem 0 2.5rem;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--pierre);
+  }
+  .divider-icon { color: var(--cuivre); font-size: 1rem; flex-shrink: 0; }
+
+  /* ══════════════ BADGES (Labels produits) ══════════════ */
+  .badges { display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .badge {
+    padding: 0.3rem 0.9rem; font-size: 0.7rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid var(--pierre); color: var(--texte-muted);
+  }
+
+  /* ══════════════ À PROPOS ══════════════ */
+  #apropos { background: var(--sable); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center;
+  }
+  .about-img-wrapper { position: relative; }
+  .about-img {
+    width: 100%; aspect-ratio: 4/5; object-fit: cover;
+    filter: saturate(85%);
+    transition: filter 0.5s, transform 0.5s;
+  }
+  .about-img:hover { filter: saturate(100%); transform: scale(1.02); }
+  .about-img-badge {
+    position: absolute; bottom: -1.5rem; right: -1.5rem;
+    background: var(--brun); color: var(--cuivre-clair);
+    padding: 1.5rem; text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .about-img-badge strong { display: block; font-size: 2.5rem; line-height: 1; }
+  .about-img-badge span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .about-text p { color: var(--texte-muted); margin-bottom: 1.3rem; font-size: 0.98rem; }
+  .about-details { display: flex; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap; }
+  .detail-item strong {
+    display: block; font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; color: var(--vert); line-height: 1;
+  }
+  .detail-item span { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texte-muted); }
+
+  /* ══════════════ MENU ══════════════ */
+  .menu-section { background: var(--brun-pale); }
+  .menu-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem; }
+  .menu-note { font-size: 0.82rem; color: var(--texte-muted); font-style: italic; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px,1fr)); gap: 2rem; margin-top: 3rem; }
+  .menu-category {
+    background: var(--blanc);
+    padding: 2.2rem;
+    border-left: 3px solid var(--cuivre);
+    position: relative;
+    transition: box-shadow 0.35s, transform 0.35s;
+  }
+  .menu-category::before {
+    content: '';
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 3px; background: var(--vert);
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform 0.4s ease;
+  }
+  .menu-category:hover::before { transform: scaleY(1); }
+  .menu-category:hover { box-shadow: 0 12px 40px rgba(44,30,22,0.1); transform: translateY(-5px); }
+  .menu-category h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; color: var(--brun); margin-bottom: 1.8rem;
+    font-weight: 600; letter-spacing: 0.02em;
+  }
+  .menu-category h3::after { content: ''; display: block; width: 30px; height: 1px; background: var(--cuivre); margin-top: 0.6rem; }
+  .menu-item {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.75rem 0; border-bottom: 1px dotted var(--pierre); gap: 1rem;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item-name { font-size: 0.92rem; color: var(--texte); flex: 1; font-weight: 400; letter-spacing: 0.02em; }
+  .menu-item-desc { display: block; font-size: 0.78rem; color: var(--texte-muted); font-style: italic; margin-top: 0.2rem; font-family: 'Cormorant Garamond', serif; font-size: 0.88rem; }
+  .menu-item-price { font-family: 'Cormorant Garamond', serif; color: var(--vert); font-size: 1.05rem; white-space: nowrap; font-weight: 600; }
+
+  /* ══════════════ FORMULE ══════════════ */
+  .formule-strip {
+    background: var(--vert); color: var(--blanc);
+    padding: 0.9rem 2rem; text-align: center;
+    font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .formule-strip strong { color: var(--cuivre-clair); }
+
+  /* ══════════════ PARALLAX BANNER ══════════════ */
+  .parallax-banner {
+    position: relative; height: 420px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .parallax-banner-bg {
+    position: absolute; inset: -20%;
+    background: url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1800&q=80') center/cover no-repeat;
+    filter: brightness(0.38) saturate(80%);
+    will-change: transform;
+  }
+  .parallax-banner-text { position: relative; z-index: 2; text-align: center; color: #fff; }
+  .parallax-banner-text blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    font-style: italic; max-width: 720px; padding: 0 2rem; line-height: 1.4;
+  }
+  .parallax-banner-text cite {
+    display: block; margin-top: 1.2rem;
+    font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--cuivre-clair); font-style: normal;
+    font-family: 'Josefin Sans', sans-serif;
+  }
+  /* Décoration */
+  .banner-deco {
+    position: absolute; z-index: 2;
+    width: 80px; height: 1px; background: rgba(184,115,51,0.5);
+  }
+  .banner-deco-left { left: 10%; top: 50%; }
+  .banner-deco-right { right: 10%; top: 50%; }
+
+  /* ══════════════ GALERIE ══════════════ */
+  #galerie { background: var(--sable); }
+  .galerie-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 280px 280px;
+    gap: 0.6rem; margin-top: 3rem;
+  }
+  .img-wrap { overflow: hidden; }
+  .img-wrap.grande { grid-row: span 2; }
+  .galerie-grid img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: saturate(80%);
+    transition: filter 0.5s, transform 0.65s;
+    display: block;
+  }
+  .img-wrap:hover img { filter: saturate(100%); transform: scale(1.08); }
+
+  /* ══════════════ VALEURS ══════════════ */
+  .valeurs-section { background: var(--vert); }
+  .valeurs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; margin-top: 3.5rem; }
+  .valeur-item { text-align: center; }
+  .valeur-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+  .valeur-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; color: var(--cuivre-clair); margin-bottom: 0.8rem; font-weight: 600;
+  }
+  .valeur-item p { color: rgba(245,239,230,0.7); font-size: 0.9rem; }
+
+  /* ══════════════ CONTACT ══════════════ */
+  .contact-section { background: var(--texte); color: var(--brun-pale); }
+  .contact-section .section-title { color: var(--sable); }
+  .contact-section .section-label { color: var(--cuivre-clair); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3.5rem; margin-top: 3.5rem; }
+  .contact-block h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--cuivre-clair); margin-bottom: 1.2rem; font-weight: 600;
+  }
+  .contact-block h4::after { content: ''; display: block; width: 25px; height: 1px; background: var(--cuivre); margin-top: 0.4rem; }
+  .contact-block p, .contact-block li { color: rgba(242,235,226,0.72); font-size: 0.92rem; margin-bottom: 0.5rem; }
+  .contact-block ul { list-style: none; }
+  .contact-block li strong { color: var(--brun-pale); }
+  .contact-block a { color: var(--cuivre-clair); text-decoration: none; transition: color 0.2s; }
+  .contact-block a:hover { color: #fff; }
+
+  /* ══════════════ RÉSERVATION ══════════════ */
+  .resa-section { background: var(--brun-pale); text-align: center; }
+  .resa-section .section-title { max-width: 600px; margin: 0 auto 0.5rem; }
+  .resa-section > .container > p { color: var(--texte-muted); margin-bottom: 1.5rem; }
+  .tel-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    color: var(--brun); display: inline-block; margin: 1.5rem 0;
+    text-decoration: none; font-weight: 600;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .tel-big:hover { color: var(--cuivre); transform: scale(1.03); }
+  .resa-separator { display: flex; align-items: center; gap: 1.5rem; justify-content: center; margin: 0.8rem 0; }
+  .resa-separator::before, .resa-separator::after { content: ''; width: 60px; height: 1px; background: var(--pierre); }
+  .resa-separator span { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--texte-muted); }
+
+  /* ══════════════ FOOTER ══════════════ */
+  footer {
+    background: var(--texte); color: rgba(242,235,226,0.4);
+    text-align: center; padding: 2rem; font-size: 0.78rem; letter-spacing: 0.06em;
+    border-top: 1px solid rgba(184,115,51,0.2);
+  }
+  footer span { color: var(--cuivre-clair); }
+
+  /* ══════════════ RESPONSIVE ══════════════ */
+  @media(max-width:768px){
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .about-img-badge { right: 0; bottom: -1rem; }
+    .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .valeurs-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .galerie-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px 200px; }
+    .img-wrap.grande { grid-row: span 1; }
+    .hero-corner { width: 60px; height: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">La Ferme du Vallon</a>
+  <ul class="nav-links">
+    <li><a href="#apropos">Notre histoire</a></li>
+    <li><a href="#menu">La carte</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#reservation" class="nav-resa">Réserver</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-corner hero-corner-tl"></div>
+  <div class="hero-corner hero-corner-br"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Cuisine de Montagne &amp; Terroir · Laguiole · Depuis 1987</p>
+    <h1>La Ferme<br><em>du Vallon</em></h1>
+    <p class="hero-sub">Là où la montagne nourrit l'assiette — produits de la ferme, recettes d'antan, chaleur d'une vraie table.</p>
+    <div class="hero-btns">
+      <a href="#reservation" class="btn-primary">Réserver une table</a>
+      <a href="#menu" class="btn-outline">Découvrir la carte</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Descendre</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ BANDEAU ══ -->
+<div class="bandeau">
+  Ouvert du Mercredi au Dimanche <span>·</span> Midi &amp; Soir <span>·</span> 05 65 44 29 16
+</div>
+
+<!-- ══ À PROPOS ══ -->
+<section id="apropos">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrapper reveal-left">
+        <img
+          src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=800&q=80"
+          alt="Intérieur de la Ferme du Vallon"
+          class="about-img"
+        />
+        <div class="about-img-badge">
+          <strong>37</strong>
+          <span>ans de passion</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <p class="section-label reveal">Notre histoire</p>
+        <h2 class="section-title reveal delay-1">Une ferme, une famille,<br>une table partagée</h2>
+        <div class="divider reveal delay-2"><span class="divider-icon">✦</span></div>
+        <div class="badges reveal delay-2">
+          <span class="badge">Producteur local</span>
+          <span class="badge">Fait maison</span>
+          <span class="badge">Races Aubrac</span>
+          <span class="badge">Vins de pays</span>
+        </div>
+        <p class="reveal delay-3">En 1987, Gisèle et Robert Morel ouvrent leur ferme aux voyageurs affamés. Pas de chichi, pas de mise en scène : juste ce que la terre donne, cuisiné comme ça s'est toujours fait ici. La charcuterie est faite maison, la viande vient de leur propre élevage, les légumes du potager.</p>
+        <p class="reveal delay-4">Aujourd'hui leur fils Julien perpétue cette tradition avec le même amour du produit — en y ajoutant une touche de curiosité moderne. La salle en pierre, les poutres centenaires et la grande cheminée font le reste.</p>
+        <div class="about-details">
+          <div class="detail-item reveal delay-3"><strong>37</strong><span>ans d'histoire</span></div>
+          <div class="detail-item reveal delay-4"><strong>60</strong><span>couverts</span></div>
+          <div class="detail-item reveal delay-5"><strong>4</strong><span>ha de terres</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MENU ══ -->
+<section id="menu" class="menu-section">
+  <div class="container">
+    <div class="menu-header">
+      <div>
+        <p class="section-label reveal">La carte</p>
+        <h2 class="section-title reveal delay-1">Plats du moment</h2>
+      </div>
+      <p class="menu-note reveal delay-2">Carte renouvelée selon la saison &amp; les récoltes</p>
+    </div>
+    <div class="divider reveal delay-2"><span class="divider-icon">✦</span></div>
+
+    <div class="menu-grid">
+      <div class="menu-category reveal delay-1">
+        <h3>Entrées</h3>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Soupe paysanne au lard fumé</span>
+            <span class="menu-item-desc">Légumes du potager, pain de campagne grillé</span>
+          </div>
+          <span class="menu-item-price">8 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Planche de charcuteries maison</span>
+            <span class="menu-item-desc">Saucisson, pâté en croûte, coppa, cornichons</span>
+          </div>
+          <span class="menu-item-price">14 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Œufs cocotte à la crème</span>
+            <span class="menu-item-desc">Morilles, persil plat, mouillettes au beurre</span>
+          </div>
+          <span class="menu-item-price">11 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Terrine de campagne</span>
+            <span class="menu-item-desc">Recette de Gisèle, confiture d'oignons</span>
+          </div>
+          <span class="menu-item-price">9 €</span>
+        </div>
+      </div>
+
+      <div class="menu-category reveal delay-2">
+        <h3>Plats</h3>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Côte de bœuf Aubrac à la braise</span>
+            <span class="menu-item-desc">Beurre maître d'hôtel, haricots beurre du jardin</span>
+          </div>
+          <span class="menu-item-price">28 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Aligot de l'Aubrac &amp; cochon de lait</span>
+            <span class="menu-item-desc">Tome fraîche, ail nouveau, jus de rôti</span>
+          </div>
+          <span class="menu-item-price">19 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Blanquette de veau à l'ancienne</span>
+            <span class="menu-item-desc">Champignons des bois, riz pilaf au beurre</span>
+          </div>
+          <span class="menu-item-price">22 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Poulet fermier rôti &amp; pommes sarladaises</span>
+            <span class="menu-item-desc">Jus de cuisson, salade du jardin</span>
+          </div>
+          <span class="menu-item-price">20 €</span>
+        </div>
+      </div>
+
+      <div class="menu-category reveal delay-3">
+        <h3>Desserts</h3>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Tarte tatin aux pommes</span>
+            <span class="menu-item-desc">Crème fraîche épaisse, caramel maison</span>
+          </div>
+          <span class="menu-item-price">7 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Gâteau à la broche du Lévézou</span>
+            <span class="menu-item-desc">Fleur d'oranger, crème anglaise</span>
+          </div>
+          <span class="menu-item-price">8 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Fromages affinés du plateau</span>
+            <span class="menu-item-desc">Laguiole fermier, Pérail, confiture de cerises</span>
+          </div>
+          <span class="menu-item-price">10 €</span>
+        </div>
+        <div class="menu-item">
+          <div>
+            <span class="menu-item-name">Clafoutis aux cerises noires</span>
+            <span class="menu-item-desc">Sucre glace, amandes effilées</span>
+          </div>
+          <span class="menu-item-price">6 €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="formule-strip">
+  Menu du midi en semaine : <strong>Entrée + Plat + Dessert à 16 €</strong> — Boisson non comprise
+</div>
+
+<!-- ══ PARALLAX BANNER ══ -->
+<div class="parallax-banner">
+  <div class="parallax-banner-bg" id="bannerBg"></div>
+  <div class="banner-deco banner-deco-left"></div>
+  <div class="banner-deco banner-deco-right"></div>
+  <div class="parallax-banner-text reveal">
+    <blockquote>« On ne fait pas de grande cuisine avec de petits produits. »</blockquote>
+    <cite>— Julien Morel, chef &amp; éleveur</cite>
+  </div>
+</div>
+
+<!-- ══ GALERIE ══ -->
+<section id="galerie">
+  <div class="container">
+    <p class="section-label reveal">Galerie</p>
+    <h2 class="section-title reveal delay-1">La salle, la ferme, l'assiette</h2>
+    <div class="divider reveal delay-2"><span class="divider-icon">✦</span></div>
+    <div class="galerie-grid">
+      <div class="img-wrap grande reveal-left">
+        <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=900&q=80" alt="Salle rustique" />
+      </div>
+      <div class="img-wrap reveal delay-1">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=700&q=80" alt="Plat de viande" />
+      </div>
+      <div class="img-wrap reveal delay-2">
+        <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=700&q=80" alt="Table dressée" />
+      </div>
+      <div class="img-wrap reveal delay-3">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80" alt="Ambiance" />
+      </div>
+      <div class="img-wrap reveal delay-4">
+        <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=700&q=80" alt="Dessert" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ VALEURS ══ -->
+<section class="valeurs-section">
+  <div class="container">
+    <p class="section-label reveal" style="color:var(--cuivre-clair)">Notre philosophie</p>
+    <h2 class="section-title reveal delay-1" style="color:var(--sable)">Ce en quoi nous croyons</h2>
+    <div class="divider reveal delay-2" style="--pierre: rgba(184,115,51,0.3)"><span class="divider-icon" style="color:var(--cuivre-clair)">✦</span></div>
+    <div class="valeurs-grid">
+      <div class="valeur-item reveal delay-1">
+        <span class="valeur-icon">🌿</span>
+        <h4>Du champ à l'assiette</h4>
+        <p>Nous élevons nos propres animaux et cultivons nos légumes. Vous mangez ce que nos mains ont produit.</p>
+      </div>
+      <div class="valeur-item reveal delay-2">
+        <span class="valeur-icon">🔥</span>
+        <h4>Cuisson à l'ancienne</h4>
+        <p>Braséro, cocotte en fonte, four à bois — les saveurs profondes ne s'obtiennent pas autrement.</p>
+      </div>
+      <div class="valeur-item reveal delay-3">
+        <span class="valeur-icon">🤝</span>
+        <h4>Producteurs voisins</h4>
+        <p>Ce que nous ne faisons pas nous-mêmes, nous l'achetons à nos voisins du plateau. À moins de 30 km.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact" class="contact-section">
+  <div class="container">
+    <p class="section-label reveal">Nous trouver</p>
+    <h2 class="section-title reveal delay-1">Horaires &amp; Accès</h2>
+    <div class="divider reveal delay-2" style="--pierre: rgba(184,115,51,0.25)"><span class="divider-icon" style="color:var(--cuivre-clair)">✦</span></div>
+    <div class="contact-grid">
+      <div class="contact-block reveal delay-1">
+        <h4>Horaires</h4>
+        <ul>
+          <li><strong>Lundi – Mardi</strong> Fermés</li>
+          <li><strong>Mercredi – Vendredi</strong> 12h–14h / 19h–21h30</li>
+          <li><strong>Samedi</strong> 12h–14h30 / 19h–22h</li>
+          <li><strong>Dimanche</strong> 12h–15h (déjeuner uniquement)</li>
+        </ul>
+      </div>
+      <div class="contact-block reveal delay-2">
+        <h4>Nous contacter</h4>
+        <p>📍 Route du Vallon, 12210 Laguiole</p>
+        <p>📞 <a href="tel:0565442916">05 65 44 29 16</a></p>
+        <p>✉️ <a href="mailto:contact@fermeduvallon.fr">contact@fermeduvallon.fr</a></p>
+        <p style="margin-top:0.8rem; font-size:0.82rem;">Parking gratuit sur place</p>
+      </div>
+      <div class="contact-block reveal delay-3">
+        <h4>Informations pratiques</h4>
+        <ul>
+          <li>Réservation conseillée le week-end</li>
+          <li>Menu du midi à 16 € (en semaine)</li>
+          <li>Groupes &amp; séminaires jusqu'à 50 pers.</li>
+          <li>Grande terrasse ombragée en été</li>
+          <li>Animaux bienvenus en terrasse</li>
+          <li>Accès PMR</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ RÉSERVATION ══ -->
+<section id="reservation" class="resa-section">
+  <div class="container">
+    <p class="section-label reveal">Réservation</p>
+    <h2 class="section-title reveal delay-1">Réservez votre table</h2>
+    <p class="reveal delay-2">Un coup de fil suffit — nous serons ravis de vous accueillir.</p>
+    <a href="tel:0565442916" class="tel-big reveal delay-3">05 65 44 29 16</a>
+    <div class="resa-separator reveal delay-4"><span>ou</span></div>
+    <p class="reveal delay-4" style="font-size:0.85rem; color:var(--texte-muted)">
+      Par e-mail : <a href="mailto:contact@fermeduvallon.fr" style="color:var(--brun)">contact@fermeduvallon.fr</a>
+    </p>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <p>© 2024 <span>La Ferme du Vallon</span> · Route du Vallon, 12210 Laguiole · Tous droits réservés</p>
+</footer>
+
+<script>
+  const navbar  = document.getElementById('navbar');
+  const heroBg  = document.getElementById('heroBg');
+  const bannerBg = document.getElementById('bannerBg');
+
+  window.addEventListener('scroll', () => {
+    const sy = window.scrollY;
+    navbar.classList.toggle('scrolled', sy > 60);
+    if (heroBg) heroBg.style.transform = `translateY(${sy * 0.35}px)`;
+    if (bannerBg) {
+      const rect = bannerBg.parentElement.getBoundingClientRect();
+      const offset = (window.innerHeight / 2 - rect.top - rect.height / 2) * 0.2;
+      bannerBg.style.transform = `translateY(${offset}px)`;
+    }
+  }, { passive: true });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
